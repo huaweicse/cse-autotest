@@ -1,0 +1,8 @@
+---
+#微服务的私有属性
+appid: sdkat
+name: sdkat_consumer_mesher
+version: 2.0
+
+http:
+  listenAddress: 0.0.0.0:8080

@@ -1,0 +1,20 @@
+---
+cse:
+  service:
+    registry:
+      address: https://cse.cn-north-1.myhwclouds.com:443 # uri of service center
+      scope: full #set full to be able to discover other app's service
+      watch: false # set if you want to watch instance change event
+      autoIPIndex: true # set to true if u want to resolve source IP to microservice
+  config:
+    client:
+      serverUri: https://cse.cn-north-1.myhwclouds.com:443 #uri of config center
+      refreshMode: 1 # 1: only pull config. 2: watch config change events
+      refreshInterval: 5 # unit is second
+      autodiscovery: false
+  monitor: #Send monitoring data to CSE monitor Server
+    client:
+#      serverUri: https://cse.cn-north-1.myhwclouds.com:443   # monitor server url
+  protocols:
+    rest:
+      listenAddress: 0.0.0.0:9090

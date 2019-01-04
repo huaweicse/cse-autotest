@@ -1,0 +1,263 @@
+version: "3"
+services:
+  sdkat_provider_gosdk_v3_one:
+    image: sdkat_provider_gosdk:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - INSTANCE_ALIAS=1
+
+  sdkat_provider_gosdk_v3_two:
+    image: sdkat_provider_gosdk:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - INSTANCE_ALIAS=2
+
+  sdkat_provider_gosdk_v2:
+    image: sdkat_provider_gosdk:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/provider-gosdk/conf-v2:/tmp"
+
+  sdkat_provider_mesher_v3_one:
+    image: sdkat_provider_mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - INSTANCE_ALIAS=1
+  sdkat_provider_mesher_v3_one_mesher:
+    image: cse-mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 100M
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      - SPECIFIC_ADDR=127.0.0.1:9090
+      - SERVICE_NAME=sdkat_provider_mesher
+      - VERSION=3.0
+      - APP_ID=sdkat
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/provider-mesher/conf-mesher:/tmp"
+    depends_on:
+      - sdkat_provider_mesher_v3_one
+    network_mode: "service:sdkat_provider_mesher_v3_one"
+
+  sdkat_provider_mesher_v3_two:
+    image: sdkat_provider_mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - INSTANCE_ALIAS=2
+  sdkat_provider_mesher_v3_two_mesher:
+    image: cse-mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 100M
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      - SPECIFIC_ADDR=127.0.0.1:9090
+      - SERVICE_NAME=sdkat_provider_mesher
+      - VERSION=3.0
+      - APP_ID=sdkat
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/provider-mesher/conf-mesher:/tmp"
+    depends_on:
+      - sdkat_provider_mesher_v3_two
+    network_mode: "service:sdkat_provider_mesher_v3_two"
+
+  sdkat_provider_mesher_v2:
+    image: sdkat_provider_mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/provider-mesher/conf-v2:/tmp"
+  sdkat_provider_mesher_v2_mesher:
+    image: cse-mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 100M
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      - SPECIFIC_ADDR=127.0.0.1:9090
+      - SERVICE_NAME=sdkat_provider_mesher
+      - VERSION=2.0
+      - APP_ID=sdkat
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/provider-mesher/conf-v2-mesher:/tmp"
+    depends_on:
+      - sdkat_provider_mesher_v2
+    network_mode: "service:sdkat_provider_mesher_v2"
+
+
+  sdkat_consumer_gosdk:
+    image: sdkat_consumer_gosdk:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    depends_on:
+      - sdkat_provider_gosdk_v3_one
+      - sdkat_provider_gosdk_v3_two
+      - sdkat_provider_gosdk_v2
+      - sdkat_provider_mesher_v3_one
+      - sdkat_provider_mesher_v3_one_mesher
+      - sdkat_provider_mesher_v3_two
+      - sdkat_provider_mesher_v3_two_mesher
+      - sdkat_provider_mesher_v2
+      - sdkat_provider_mesher_v2_mesher
+    ports:
+      # sdkat_consumer_gosdk
+      - "8000:8000"
+      - "8001:8001"
+      # sdkat_consumer_mesher
+      - "8080:8080"
+      - "8081:8081"
+
+  sdkat_consumer_gosdk_route:
+    image: sdkat_consumer_gosdk:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/consumer-gosdk/conf-route:/tmp"
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"
+
+  sdkat_consumer_mesher:
+    image: sdkat_consumer_mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - http_proxy=http://127.0.0.1:30101
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"
+  sdkat_consumer_mesher_mesher:
+    image: cse-mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 100M
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      - SERVICE_NAME=sdkat_consumer_mesher
+      - VERSION=2.0
+      - APP_ID=sdkat
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/consumer-mesher/conf-mesher:/tmp"
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"
+
+  sdkat_consumer_mesher_route:
+    image: sdkat_consumer_mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 50M
+        limits:
+          cpus: '0.25'
+          memory: 250M
+    environment:
+      - http_proxy=http://127.0.0.1:30111
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/consumer-mesher/conf-route:/tmp"
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"
+  sdkat_consumer_mesher_route_mesher:
+    image: cse-mesher:latest
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 100M
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      - SERVICE_NAME=sdkat_consumer_mesher
+      - VERSION=2.0
+      - APP_ID=sdkat
+    volumes:
+      - "/opt/CSE/cse-autotest/src/code.huawei.com/cse/assets/consumer-mesher/conf-route-mesher:/tmp"
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"
+
+
+  sdkat_testcase:
+    image: sdkat_testcase:latest
+    depends_on:
+      - sdkat_consumer_gosdk
+    network_mode: "service:sdkat_consumer_gosdk"

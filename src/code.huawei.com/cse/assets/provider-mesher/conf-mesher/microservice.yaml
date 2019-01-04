@@ -1,0 +1,6 @@
+---
+#微服务的私有属性
+APPLICATION_ID: sdkat
+service_description:
+  name: sdkat_provider_mesher
+  version: 3.0

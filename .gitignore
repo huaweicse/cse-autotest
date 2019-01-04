@@ -1,0 +1,30 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
+
+
+# idea
+.idea
+*.log
+*.log.*.zip
+*.a
+/src/vendor/
+/src/code.huawei.com/**/release/
+/src/code.huawei.com/**/*.tar.gz
+/src/code.huawei.com/**/*.tar
+/src/code.huawei.com/cse/assets/**/app
+/src/code.huawei.com/cse/assets/**/log/
+/log/
+/pkg/
+/source.tar.gz

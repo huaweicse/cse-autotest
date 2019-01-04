@@ -1,0 +1,15 @@
+routeRule:
+ sdkat_provider_gosdk: #服务名
+   - precedence: 0 #优先级，数字越大优先级越高
+     route: #路由规则
+     - tags:
+         version: 3.0 #版本
+         app: sdkat #application
+       weight: 100 #权重
+ sdkat_provider_mesher: #服务名
+   - precedence: 0 #优先级，数字越大优先级越高
+     route: #路由规则
+     - tags:
+         version: 3.0 #版本
+         app: sdkat #application
+       weight: 100 #权重
