@@ -30,4 +30,6 @@ const (
 	FailV3        = "/failV3"
 	Provider      = "/provider"
 	ProxyTo       = "/proxyTo/{service}"
+	// cc
+	ConfigCenterAdd = "config_center"
 )
