@@ -10,10 +10,13 @@ const (
 	//ChassisConfDir is constant of type string
 	ChassisConfDir = "CHASSIS_CONF_DIR"
 	//ChassisHome is constant of type string
-	ChassisHome = "CHASSIS_HOME"
+	ChassisHome       = "CHASSIS_HOME"
+	PAAS_PROJECT_NAME = "PAAS_PROJECT_NAME"
 )
 
 const Definition = "microservice.yaml"
+
+const Auth string = "auth.yaml"
 
 var configDir string
 var homeDir string
@@ -63,4 +66,8 @@ func GetConfDir() string {
 //GetDefinition is a function used to join .yaml file name with configuration path
 func GetDefinition() string {
 	return filepath.Join(GetConfDir(), Definition)
+}
+
+func GetAuth() string {
+	return filepath.Join(GetConfDir(), Auth)
 }
