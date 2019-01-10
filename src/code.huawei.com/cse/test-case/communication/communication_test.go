@@ -1,29 +1,24 @@
 package communication_test
 
 import (
+	"code.huawei.com/cse/testkit"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
-	consumerRestApi "code.huawei.com/cse/api/consumer/rest"
+	providerRestApi "code.huawei.com/cse/api/provider/rest"
 	"code.huawei.com/cse/common"
 	"code.huawei.com/cse/model"
 	"code.huawei.com/cse/util"
 	"encoding/json"
 )
 
-var (
-	GosdkConsumerAddr  string = os.Getenv(common.EnvConsumerGoSdkAddr)
-	MesherConsumerAddr string = os.Getenv(common.EnvConsumerMesherAddr)
-)
-
 func CheckReponseProvider(u, key string) {
-	c := &model.InvokeResponce{}
+	c := &model.InstanceInfoResponse{}
 	resp, err := http.Get(u)
 	Expect(err).To(BeNil())
 	Expect(resp.StatusCode).To(Equal(http.StatusOK))
@@ -42,48 +37,18 @@ func CheckReponseProvider(u, key string) {
 	}
 }
 
-var _ = Describe("Communication", func() {
-	if GosdkConsumerAddr == "" {
-		GosdkConsumerAddr = common.AddrDefaultGoSDKConsumer
-	}
-	if MesherConsumerAddr == "" {
-		MesherConsumerAddr = common.AddrDefaultMesherConsumer
-	}
-	gosdkProviderKey := strings.Join([]string{common.ProviderGoSDK, common.Version30, common.AppSDKAT}, "/")
-	mesherProviderKey := strings.Join([]string{common.ProviderMesher, common.Version30, common.AppSDKAT}, "/")
-	gosdk2GosdkUrl := fmt.Sprintf("%s%s?%s", GosdkConsumerAddr, consumerRestApi.TestCommunication,
+func test(consumerAddr, providerName, protocol string) {
+	providerKey := strings.Join([]string{providerName, common.Version30, common.AppSDKAT}, "/")
+	testUri := fmt.Sprintf("http://%s%s?%s", consumerAddr, providerRestApi.Svc,
 		util.FncodeParams([]util.URLParameter{
-			{common.ParamProvider: common.ProviderGoSDK},
-			{common.ParamProtocol: common.ProtocolRest},
+			{common.ParamProvider: providerName},
+			{common.ParamProtocol: protocol},
 		}))
-	gosdk2MesherUrl := fmt.Sprintf("%s%s?%s", GosdkConsumerAddr, consumerRestApi.TestCommunication,
-		util.FncodeParams([]util.URLParameter{
-			{common.ParamProvider: common.ProviderMesher},
-			{common.ParamProtocol: common.ProtocolRest},
-		}))
-	mesher2GosdkUrl := fmt.Sprintf("%s%s?%s", MesherConsumerAddr, consumerRestApi.TestCommunication,
-		util.FncodeParams([]util.URLParameter{
-			{common.ParamProvider: common.ProviderGoSDK},
-			{common.ParamProtocol: common.ProtocolRest},
-		}))
-	mesher2MesherUrl := fmt.Sprintf("%s%s?%s", MesherConsumerAddr, consumerRestApi.TestCommunication,
-		util.FncodeParams([]util.URLParameter{
-			{common.ParamProvider: common.ProviderMesher},
-			{common.ParamProtocol: common.ProtocolRest},
-		}))
-
-	Context("Should get responce from target provider", func() {
-		It(common.GoSdk2GoSdk, func() {
-			CheckReponseProvider(gosdk2GosdkUrl, gosdkProviderKey)
-		})
-		It(common.GoSdk2Mesher, func() {
-			CheckReponseProvider(gosdk2MesherUrl, mesherProviderKey)
-		})
-		It(common.Mesher2GoSdk, func() {
-			CheckReponseProvider(mesher2GosdkUrl, gosdkProviderKey)
-		})
-		It(common.Mesher2Mesher, func() {
-			CheckReponseProvider(mesher2MesherUrl, mesherProviderKey)
-		})
+	It("Response should contains expected provider info", func() {
+		CheckReponseProvider(testUri, providerKey)
 	})
+}
+
+var _ = Describe("Communication", func() {
+	testkit.SDKATContext(test)
 })
