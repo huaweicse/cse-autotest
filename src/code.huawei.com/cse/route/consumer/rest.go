@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	providerRestApi "code.huawei.com/cse/api/provider/rest"
 	"code.huawei.com/cse/common"
@@ -128,14 +127,14 @@ func (s *Server) ConfigCenter(w http.ResponseWriter, r *http.Request) {
 func ccAdd(param Param) (*http.Response, error) {
 
 	// get url
-	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.ProjectId)
+	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.Cse.Credentials.Project)
 	// param
 	configApi := CreateConfigApi{
 		DimensionInfo: param.DimensionInfo,
 		Items:         param.Data,
 	}
 	cb, _ := json.Marshal(configApi)
-	payload := strings.NewReader(string(cb))
+	payload := bytes.NewReader(cb)
 	return ccHTTPDO(payload, ccurl, http.MethodPost)
 }
 
@@ -145,18 +144,18 @@ func ccDelete(param Param) (*http.Response, error) {
 		return nil, errors.New("not key need to delete , please check keys")
 	}
 	// ccurl
-	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.ProjectId)
+	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.Cse.Credentials.Project)
 
 	configApi := DeleteConfigApi{
 		DimensionInfo: param.DimensionInfo,
 		Keys:          param.Keys,
 	}
 	cb, _ := json.Marshal(configApi)
-	payload := strings.NewReader(string(cb))
+	payload := bytes.NewReader(cb)
 
 	return ccHTTPDO(payload, ccurl, http.MethodDelete)
 }
-func ccHTTPDO(data *strings.Reader, ccurl, method string) (*http.Response, error) {
+func ccHTTPDO(data *bytes.Reader, ccurl, method string) (*http.Response, error) {
 	req, _ := http.NewRequest(method, ccurl, data)
 	if signRequest == nil {
 		signRequest = newSignRequest()
@@ -187,7 +186,8 @@ func errorMessage(w http.ResponseWriter, status int, message string) {
 func newSignRequest() auth.SignRequest {
 	request, _ := auth.GetShaAKSKSignFunc(config.GlobalDef.Cse.Credentials.AccessKey,
 		config.GlobalDef.Cse.Credentials.SecretKey,
-		config.GlobalDef.Region)
+		config.GlobalDef.Cse.Credentials.Project)
+
 	return request
 }
 func NewRouter(i Invoker) *mux.Router {

@@ -21,7 +21,7 @@ var addParam Param
 
 func init() {
 	os.Setenv(util.ChassisHome, "/usr/cse-auth/test")
-	os.Setenv(util.PAAS_PROJECT_NAME, "test-project")
+	os.Setenv(util.PAAS_PROJECT_NAME, "default")
 	config.Init()
 	addParam = Param{
 		Data: map[string]interface{}{

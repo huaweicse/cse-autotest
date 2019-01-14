@@ -105,17 +105,11 @@ func CheckGlobalDef(oldDef *model.GlobalCfg) *model.GlobalCfg {
 	envProject := getProject()
 
 	if envProject != "" {
-		newDef.ProjectId = envProject
-	} else if oldDef.ProjectId != "" {
-		newDef.ProjectId = oldDef.ProjectId
+		newDef.Cse.Credentials.Project = envProject
 	} else {
-		newDef.ProjectId = "default"
+		newDef.Cse.Credentials.Project = "default"
 	}
-	if oldDef.Region != "" {
-		newDef.Region = oldDef.Region
-	} else {
-		newDef.Region = _DefaultRegion
-	}
+
 	if oldDef.ConfigCenterUrl != "" {
 		newDef.ConfigCenterUrl = oldDef.ConfigCenterUrl
 	} else {
@@ -130,8 +124,11 @@ func CheckGlobalDef(oldDef *model.GlobalCfg) *model.GlobalCfg {
 	if oldDef.Cse.Credentials.AkskCustomCipher != "" {
 		newDef.Cse.Credentials.AkskCustomCipher = oldDef.Cse.Credentials.AkskCustomCipher
 	}
-	if oldDef.Cse.Credentials.Project.AkskCustomCipher != "" {
-		newDef.Cse.Credentials.Project.AkskCustomCipher = oldDef.Cse.Credentials.Project.AkskCustomCipher
+	if oldDef.Cse.Credentials.AkskCustomCipher != "" {
+		newDef.Cse.Credentials.AkskCustomCipher = oldDef.Cse.Credentials.AkskCustomCipher
+	}
+	if oldDef.Cse.Credentials.Project != "" {
+		newDef.Cse.Credentials.Project = oldDef.Cse.Credentials.Project
 	}
 
 	return &newDef
