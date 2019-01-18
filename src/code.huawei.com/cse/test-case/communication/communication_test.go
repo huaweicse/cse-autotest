@@ -10,11 +10,12 @@ import (
 	"net/http"
 	"strings"
 
+	"encoding/json"
+
 	providerRestApi "code.huawei.com/cse/api/provider/rest"
 	"code.huawei.com/cse/common"
 	"code.huawei.com/cse/model"
 	"code.huawei.com/cse/util"
-	"encoding/json"
 )
 
 func CheckReponseProvider(u, key string) {
@@ -37,7 +38,7 @@ func CheckReponseProvider(u, key string) {
 	}
 }
 
-func test(consumerAddr, providerName, protocol string) {
+func test(consumerAddr, providerName, protocol, dimensionInfo string) {
 	providerKey := strings.Join([]string{providerName, common.Version30, common.AppSDKAT}, "/")
 	testUri := fmt.Sprintf("http://%s%s?%s", consumerAddr, providerRestApi.Svc,
 		util.FncodeParams([]util.URLParameter{

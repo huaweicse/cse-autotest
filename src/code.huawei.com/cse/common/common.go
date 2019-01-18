@@ -80,6 +80,7 @@ const (
 	CallTimes20    = 20
 	CallTimes2Str  = "2"
 	CallTimes20Str = "20"
+	CallTimes10Str = "10"
 
 	FailNum2 = 2
 )

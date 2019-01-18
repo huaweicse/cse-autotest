@@ -1,13 +1,20 @@
 package testkit
 
 import (
-	"code.huawei.com/cse/common"
+	"encoding/json"
 	"fmt"
-	. "github.com/onsi/ginkgo"
 	"log"
 	"os"
 	"strings"
 	"sync"
+
+	"io/ioutil"
+	"net/http"
+
+	"code.huawei.com/cse/common"
+	"code.huawei.com/cse/model"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 // k: consumer type, v: protocol
@@ -30,18 +37,28 @@ var defaultProviders = map[string]string{
 	common.PlatformMesher: common.ProviderMesher,
 }
 var once sync.Once
+var instanceNames map[string]string = make(map[string]string)
+var instanceName string
 
-func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol string)) {
+func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol, dimensionInfo string)) {
 	Init()
+
 	for consumerType, consumerAddr := range consumers {
 		for providerType, providerName := range providers {
 			protos := protocols[consumerType]
 			if len(protos) == 0 {
 				protos = []string{common.ProtocolRest}
 			}
+			// dimensionInfo
+			var dimensionInfo string
+			if providerType == common.PlatformGoSDK {
+				dimensionInfo = fmt.Sprintf("%s@default#%s", common.ConsumerGoSDK, common.Version30)
+			} else if providerType == common.PlatformMesher {
+				dimensionInfo = fmt.Sprintf("%s@default#%s", common.ConsumerMesher, common.Version30)
+			}
 			for _, p := range protos {
 				Context(fmt.Sprintf("consumer addr: %s, %s -> %s, protocol: %s", consumerAddr, consumerType, providerType, p), func() {
-					body(consumerAddr, providerName, p)
+					body(consumerAddr, providerName, p, dimensionInfo)
 				})
 			}
 		}
@@ -86,4 +103,31 @@ func initConsumerAndProvider() {
 
 func Init() {
 	once.Do(initConsumerAndProvider)
+}
+
+func GetResponceInstanceAliasList(u string) []string {
+	c := &model.InstanceInfoResponse{}
+	resp, err := http.Get(u)
+	Expect(err).To(BeNil())
+	Expect(resp.StatusCode).To(Equal(http.StatusOK))
+
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).To(BeNil())
+
+	err = json.Unmarshal(body, c)
+	Expect(err).To(BeNil())
+
+	l := make([]string, 0)
+	for _, r := range c.Result {
+		Expect(r.Provider).NotTo(BeNil())
+		if r.Provider == nil {
+			continue
+		}
+		if r.Provider.InstanceAlias != "" {
+			l = append(l, r.Provider.InstanceAlias)
+		} else {
+			l = append(l, r.Provider.InstanceName)
+		}
+	}
+	return l
 }
