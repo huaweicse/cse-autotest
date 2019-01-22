@@ -31,5 +31,5 @@ const (
 	Provider      = "/provider"
 	ProxyTo       = "/proxyTo/{service}"
 	// cc
-	ConfigCenterAdd = "config_center"
+	ConfigCenterAdd = "/config_center"
 )

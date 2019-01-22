@@ -3,14 +3,15 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"github.com/go-chassis/go-chassis/pkg/runtime"
-	"github.com/go-mesh/openlogging"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-chassis/go-chassis/pkg/runtime"
+	"github.com/go-mesh/openlogging"
 
 	providerRestApi "code.huawei.com/cse/api/provider/rest"
 	"code.huawei.com/cse/common"
@@ -197,13 +198,13 @@ func (a *ATProvider) FailV3(b *rf.Context) {
 
 func (a *ATProvider) URLPatterns() []rf.Route {
 	return []rf.Route{
-		{http.MethodGet, providerRestApi.SayHello, "SayHello"},
-		{http.MethodGet, providerRestApi.Svc, "Communication"},
-		{http.MethodGet, providerRestApi.Fail, "Fail"},
-		{http.MethodGet, providerRestApi.FailTwice, "FailTwice"},
-		{http.MethodGet, providerRestApi.FailInstance, "FailInstance"},
-		{http.MethodGet, providerRestApi.Delay, "DelayMs"},
-		{http.MethodGet, providerRestApi.DelayInstance, "DelayInstance"},
+		{Method: http.MethodGet, Path: providerRestApi.SayHello, ResourceFuncName: "SayHello"},
+		{Method: http.MethodGet, Path: providerRestApi.Svc, ResourceFuncName: "Communication"},
+		{Method: http.MethodGet, Path: providerRestApi.Fail, ResourceFuncName: "Fail"},
+		{Method: http.MethodGet, Path: providerRestApi.FailTwice, ResourceFuncName: "FailTwice"},
+		{Method: http.MethodGet, Path: providerRestApi.FailInstance, ResourceFuncName: "FailInstance"},
+		{Method: http.MethodGet, Path: providerRestApi.Delay, ResourceFuncName: "DelayMs"},
+		{Method: http.MethodGet, Path: providerRestApi.DelayInstance, ResourceFuncName: "DelayInstance"},
 		//{http.MethodGet, providerRestApi.FailV3, "FailV3"},
 	}
 }
