@@ -1,13 +1,8 @@
 package loadbalance_test
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-
-	"bytes"
 
 	"time"
 
@@ -70,53 +65,37 @@ func isRand(cycle int, n ...string) {
 	Expect(IsRoundRoubin(cycle, n...)).To(BeFalse())
 	Expect(isWeightedResponse(cycle, n...)).To(BeFalse())
 }
-func test(consumerAddr, providerName, protocol, dimensionInfo string) {
-	instansNames := make(map[string]bool)
-	var instanceName string
+func test(consumerAddr, providerName, protocol, dimensionInfo, instanceName string, instancesLength int) {
+
 	testUri := fmt.Sprintf("http://%s%s?%s", consumerAddr, providerRestApi.Svc,
 		util.FncodeParams([]util.URLParameter{
 			{common.ParamProvider: providerName},
 			{common.ParamProtocol: protocol},
 			{common.ParamTimes: common.CallTimes20Str},
 		}))
-	It("Instance num should more than or equal to 2", func() {
-		instansNameList := testkit.GetResponceInstanceAliasList(testUri)
-		for k, v := range instansNameList {
-			if k == 0 || instanceName == "" {
-				instanceName = v
-			}
-			if _, ok := instansNames[v]; !ok {
-				instansNames[v] = true
-			}
-		}
-		log.Println("---check instance num, instance list:", instansNameList)
-		log.Println("---check instance num, instance num:", len(instansNames))
-		Expect(len(instansNames) >= 2).To(BeTrue())
-	})
-	instansNum := len(instansNames)
 
 	// RoundRobin test
 	testLB("Instance name list should be round robin", dimensionInfo,
-		consumerAddr, testUri, "RoundRobin", "", providerName, instanceName, instansNum)
+		consumerAddr, testUri, "RoundRobin", "", providerName, instanceName, instancesLength)
 	// session stickiness test
 	testLB("Instance name list should be session stickiness", dimensionInfo, consumerAddr,
-		testUri, "SessionStickiness", "10", providerName, instanceName, instansNum)
+		testUri, "SessionStickiness", "10", providerName, instanceName, instancesLength)
 
 	// WeightedResponse test
 	testLB("Instance name list should be WeightedResponse", dimensionInfo, consumerAddr,
-		testUri, "WeightedResponse", "", providerName, instanceName, instansNum)
+		testUri, "WeightedResponse", "", providerName, instanceName, instancesLength)
 
 	// Rand test
 	testLB("Instance name list should be Random", dimensionInfo, consumerAddr, testUri,
-		"Random", "", providerName, instanceName, instansNum)
+		"Random", "", providerName, instanceName, instancesLength)
 }
 func testLB(text, dimensionInfo, consumerAddr, testUri,
-	t, st, providerName, instanceName string, instansNameNums int) {
+	t, st, providerName, instanceName string, instancesLength int) {
 	m := map[string]interface{}{
 		"cse.loadbalance.strategy.name":                                 t,
 		"cse.loadbalance.SessionStickinessRule.sessionTimeoutInSeconds": st,
 	}
-	callcc(fmt.Sprintf("http://%s%s", consumerAddr, providerRestApi.ConfigCenterAdd),
+	testkit.Callcc(fmt.Sprintf("http://%s%s", consumerAddr, providerRestApi.ConfigCenterAdd),
 		"add", dimensionInfo, m, nil)
 	time.Sleep(3 * time.Second)
 	if t == "WeightedResponse" {
@@ -135,13 +114,13 @@ func testLB(text, dimensionInfo, consumerAddr, testUri,
 		log.Println(fmt.Sprintf("type:%s,---instance list:%v", t, nameList))
 		switch t {
 		case "RoundRobin":
-			IsRoundRoubin(instansNameNums, nameList...)
+			IsRoundRoubin(instancesLength, nameList...)
 		case "SessionStickiness":
-			isStrategySessionStickiness(instansNameNums, nameList...)
+			isStrategySessionStickiness(instancesLength, nameList...)
 		case "WeightedResponse":
-			isWeightedResponse(instansNameNums, nameList...)
+			isWeightedResponse(instancesLength, nameList...)
 		case "Random":
-			isRand(instansNameNums, nameList...)
+			isRand(instancesLength, nameList...)
 		default:
 		}
 	})
@@ -151,35 +130,3 @@ func testLB(text, dimensionInfo, consumerAddr, testUri,
 var _ = Describe("Load balance", func() {
 	testkit.SDKATContext(test)
 })
-
-func callcc(url, cctype, dimensionInfo string, items map[string]interface{}, keys []string) {
-	p := Param{
-		Data:          items,
-		Keys:          keys,
-		Type:          cctype,
-		DimensionInfo: dimensionInfo,
-	}
-	body, _ := json.Marshal(p)
-	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
-	Expect(err).To(BeNil())
-	Expect(resp).NotTo(BeNil())
-	Expect(resp.StatusCode).To(Equal(http.StatusOK))
-
-	// read data for resp
-	m := make(map[string]interface{})
-	body, err = ioutil.ReadAll(resp.Body)
-	Expect(err).To(BeNil())
-	Expect(len(body)).NotTo(Equal(0))
-	err = json.Unmarshal(body, &m)
-	Expect(err).To(BeNil())
-
-	Expect(m["Result"]).NotTo(BeEmpty())
-	Expect(m["Result"]).To(Equal("Success"))
-}
-
-type Param struct {
-	Data          map[string]interface{} `json:"data"`
-	Keys          []string               `json:"key"`
-	DimensionInfo string                 `json:"dimensionInfo"`
-	Type          string                 `json:"type"`
-}
