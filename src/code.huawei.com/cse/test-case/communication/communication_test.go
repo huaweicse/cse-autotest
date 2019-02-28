@@ -38,7 +38,7 @@ func CheckReponseProvider(u, key string) {
 	}
 }
 
-func test(consumerAddr, providerName, protocol, dimensionInfo string) {
+func test(consumerAddr, providerName, protocol, dimensionInfo, instanceName string, instancesLength int) {
 	providerKey := strings.Join([]string{providerName, common.Version30, common.AppSDKAT}, "/")
 	testUri := fmt.Sprintf("http://%s%s?%s", consumerAddr, providerRestApi.Svc,
 		util.FncodeParams([]util.URLParameter{

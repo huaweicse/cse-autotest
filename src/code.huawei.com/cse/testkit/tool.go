@@ -3,19 +3,31 @@ package testkit
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
 
-	"io/ioutil"
-	"net/http"
+	"math/rand"
 
+	"bytes"
+
+	providerRestApi "code.huawei.com/cse/api/provider/rest"
 	"code.huawei.com/cse/common"
 	"code.huawei.com/cse/model"
+	"code.huawei.com/cse/util"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+type Param struct {
+	Data          map[string]interface{} `json:"data"`
+	Keys          []string               `json:"key"`
+	DimensionInfo string                 `json:"dimensionInfo"`
+	Type          string                 `json:"type"`
+}
 
 // k: consumer type, v: protocol
 var protocols = map[string][]string{
@@ -37,10 +49,9 @@ var defaultProviders = map[string]string{
 	common.PlatformMesher: common.ProviderMesher,
 }
 var once sync.Once
-var instanceNames map[string]string = make(map[string]string)
-var instanceName string
+var instanceNames = make(map[string][]string)
 
-func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol, dimensionInfo string)) {
+func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol, dimensionInfo, instanceName string, instanceLength int)) {
 	Init()
 
 	for consumerType, consumerAddr := range consumers {
@@ -57,14 +68,42 @@ func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol,
 				dimensionInfo = fmt.Sprintf("%s@default#%s", common.ConsumerMesher, common.Version30)
 			}
 			for _, p := range protos {
+				k := fmt.Sprintf("%s|%s|%s|%s|%s", consumerType, consumerAddr, providerType, providerName, p)
+				insName, instanceLength := getInstance(k, consumerAddr, providerName, p)
 				Context(fmt.Sprintf("consumer addr: %s, %s -> %s, protocol: %s", consumerAddr, consumerType, providerType, p), func() {
-					body(consumerAddr, providerName, p, dimensionInfo)
+					body(consumerAddr, providerName, p, dimensionInfo, insName, instanceLength)
 				})
 			}
 		}
 	}
 }
-
+func getInstance(key, consumerAddr, providerName, protocol string) (string, int) {
+	if ins, ok := instanceNames[key]; ok {
+		lengthIns := len(ins)
+		return ins[rand.Intn(lengthIns)%lengthIns], lengthIns
+	}
+	testUri := fmt.Sprintf("http://%s%s?%s", consumerAddr, providerRestApi.Svc,
+		util.FncodeParams([]util.URLParameter{
+			{common.ParamProvider: providerName},
+			{common.ParamProtocol: protocol},
+			{common.ParamTimes: common.CallTimes20Str},
+		}))
+	instanceList := GetResponceInstanceAliasList(testUri)
+	newInsanceList := []string{}
+	mTemp := make(map[string]int)
+	lengthInstance := len(instanceList)
+	for i := 0; i < lengthInstance; i++ {
+		if _, ok := mTemp[instanceList[i]]; ok {
+			continue
+		}
+		mTemp[instanceList[i]] = 0
+		newInsanceList = append(newInsanceList, instanceList[i])
+	}
+	Expect(len(newInsanceList) >= 2).To(BeTrue())
+	instanceNames[key] = newInsanceList
+	lengthIns := len(newInsanceList)
+	return newInsanceList[rand.Intn(lengthIns)%lengthIns], lengthIns
+}
 func initConsumerAndProvider() {
 	consumers = make(map[string]string)
 	//如果设置了consumer地址，则使用设置的consumer地址
@@ -130,4 +169,29 @@ func GetResponceInstanceAliasList(u string) []string {
 		}
 	}
 	return l
+}
+
+func Callcc(url, cctype, dimensionInfo string, items map[string]interface{}, keys []string) {
+	p := Param{
+		Data:          items,
+		Keys:          keys,
+		Type:          cctype,
+		DimensionInfo: dimensionInfo,
+	}
+	body, _ := json.Marshal(p)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
+	Expect(err).To(BeNil())
+	Expect(resp).NotTo(BeNil())
+	Expect(resp.StatusCode).To(Equal(http.StatusOK))
+
+	// read data for resp
+	m := make(map[string]interface{})
+	body, err = ioutil.ReadAll(resp.Body)
+	Expect(err).To(BeNil())
+	Expect(len(body)).NotTo(Equal(0))
+	err = json.Unmarshal(body, &m)
+	Expect(err).To(BeNil())
+
+	Expect(m["Result"]).NotTo(BeEmpty())
+	Expect(m["Result"]).To(Equal("Success"))
 }
