@@ -16,7 +16,8 @@ GO111MODULE=on go mod download'''
     }
     stage('build') {
       steps {
-        sh 'bash build_all.sh'
+        sh '''cd $WORKSPACE/scripts
+bash build_gosdk_demo_image.sh'''
       }
     }
   }
