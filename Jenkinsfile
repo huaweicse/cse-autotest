@@ -28,7 +28,7 @@ bash build_gosdk_demo_image.sh'''
         sh '''export login_key=printf "$AK" | openssl dgst -binary -sha256 -hmac "$SK" | od -An -vtx1 | sed \'s/[ \\n]//g\' | sed \'N;s/\\n//\'
 
 
-export $SDKAT_SWR_LOGIN_CMD=docker login -u $REGION@$AK -p $login_key $SDKAT_SWR_ADDR	
+export SDKAT_SWR_LOGIN_CMD="docker login -u $REGION@$AK -p $login_key $SDKAT_SWR_ADDR"
 
 
 
