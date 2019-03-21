@@ -15,7 +15,7 @@ git clone https://github.com/go-chassis/go-chassis.git
 export GOPATH=$WORKSPACE
 export PATH=/usr/local/go/bin:$PATH
 cd $WORKSPACE/src/github.com/go-chassis/go-chassis
-GO111MODULE=on go mod download
+GO111MODULE=on go mod vendor
 mv $WORKSPACE/src/github.com/go-chassis/go-chassis/vendor $WORKSPACE/
 cd $WORKSPACE/scripts
 bash build_gosdk_demo_image.sh'''
