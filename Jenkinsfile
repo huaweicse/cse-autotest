@@ -24,8 +24,11 @@ bash build_gosdk_demo_image.sh'''
       }
     }
   }
-  environment {
-    SDKAT_SWR_ADDR = 'swr.cn-east-2.myhuaweicloud.com'
-    SDKAT_SWR_ORG = 'tian'
+  parameters {
+    string(defaultValue: "swr.cn-east-2.myhuaweicloud.com", description: '', name: 'SDKAT_SWR_ADDR')
+    string(defaultValue: "go-chassis", description: '', name: 'SDKAT_SWR_ORG')
+    string(defaultValue: "cn-north-1", description: '', name: 'REGION')
+    string(defaultValue: "", description: '', name: 'AK')
+    string(defaultValue: "", description: '', name: 'SK')
   }
 }
