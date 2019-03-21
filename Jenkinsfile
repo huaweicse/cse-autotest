@@ -16,7 +16,7 @@ export GOPATH=$WORKSPACE
 export PATH=/usr/local/go/bin:$PATH
 cd $WORKSPACE/src/github.com/go-chassis/go-chassis
 GO111MODULE=on go mod vendor
-mv $WORKSPACE/src/github.com/go-chassis/go-chassis/vendor $WORKSPACE/
+mv $WORKSPACE/src/github.com/go-chassis/go-chassis/vendor $WORKSPACE/src/
 cd $WORKSPACE/scripts
 bash build_gosdk_demo_image.sh'''
       }
