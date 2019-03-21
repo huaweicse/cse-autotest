@@ -18,6 +18,8 @@ cd $WORKSPACE/src/github.com/go-chassis/go-chassis
 GO111MODULE=on go mod vendor
 mv $WORKSPACE/src/github.com/go-chassis/go-chassis/vendor $WORKSPACE/src/
 cd $WORKSPACE/scripts
+go get github.com/huaweicse/auth
+go get github.com/huaweicse/cse-collector
 bash build_gosdk_demo_image.sh'''
       }
     }
