@@ -37,6 +37,12 @@ cd scripts
 bash push_gosdk_demo_to_huaweicloud.sh'''
       }
     }
+    stage('upgrade AOS') {
+      steps {
+        sh '''cd scripts 
+bash upgrade_stack gosdk'''
+      }
+    }
   }
   parameters {
     string(defaultValue: 'swr.cn-east-2.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
