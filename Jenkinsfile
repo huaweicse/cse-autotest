@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('dependency') {
+    stage('build') {
       agent any
       steps {
         sh '''rm -rf $WORKSPACE/src/github.com/go-chassis/
@@ -12,13 +12,8 @@ git clone https://github.com/go-chassis/go-chassis.git
 export GOPATH=$WORKSPACE
 export PATH=/usr/local/go/bin:$PATH
 cd $WORKSPACE/src/github.com/go-chassis/go-chassis
-GO111MODULE=on go mod download'''
-      }
-    }
-    stage('build') {
-      steps {
-        sh '''cd $WORKSPACE/scripts
-export PATH=/usr/local/go/bin:$PATH
+GO111MODULE=on go mod download
+cd $WORKSPACE/scripts
 bash build_gosdk_demo_image.sh'''
       }
     }
