@@ -8,7 +8,7 @@ pipeline {
 mkdir -p src/github.com/go-chassis/
 cd src/github.com/go-chassis/
 '''
-        git(url: 'git@github.com:go-chassis/go-chassis.git', branch: 'master', credentialsId: 'bedce822-c43b-4538-9f19-a42a6764b53a')
+        git(url: 'git@github.com:go-chassis/go-chassis.git', branch: 'master', credentialsId: 'db8a8e53-8f37-4a2f-b104-a637dbad1f45', poll: true)
         sh '''export GOPATH=$WORKSPACE
 GO111MODULE=on go mod download'''
       }
