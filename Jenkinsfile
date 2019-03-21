@@ -45,10 +45,17 @@ bash upgrade_stack gosdk'''
     }
   }
   parameters {
-    string(defaultValue: 'swr.cn-east-2.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
+    string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
     string(defaultValue: 'go-chassis', description: '', name: 'SDKAT_SWR_ORG')
-    string(defaultValue: 'cn-north-1', description: '', name: 'REGION')
+
+    string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
+    string(defaultValue: '9b163871-a8ba-3e89-8a30-33450217e218', description: '', name: 'SDKAT_STACK_ID')
+
+    string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
     string(defaultValue: '', description: '', name: 'AK')
     string(defaultValue: '', description: '', name: 'SK')
+    string(defaultValue: '', description: '', name: 'SDKAT_USER_NAME')
+    string(defaultValue: '', description: '', name: 'SDKAT_PASSWORD')
+    string(defaultValue: '', description: 'domain', name: 'SDKAT_TENANT_NAME')
   }
 }
