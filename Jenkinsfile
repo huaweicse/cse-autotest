@@ -28,7 +28,7 @@ bash build_gosdk_demo_image.sh'''
         sh '''export login_key=`printf "$AK" | openssl dgst -binary -sha256 -hmac "$SK" | od -An -vtx1 | sed \'s/[ \\n]//g\' | sed \'N;s/\\n//\'`
 
 
-export SDKAT_SWR_LOGIN_CMD="docker login -u $REGION@$AK -p $login_key $SDKAT_SWR_ADDR"
+export SDKAT_SWR_LOGIN_CMD="docker login -u $SDKAT_REGION@$AK -p $login_key $SDKAT_SWR_ADDR"
 
 
 
@@ -47,10 +47,8 @@ bash upgrade_stack gosdk'''
   parameters {
     string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
     string(defaultValue: 'go-chassis', description: '', name: 'SDKAT_SWR_ORG')
-
     string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
     string(defaultValue: '9b163871-a8ba-3e89-8a30-33450217e218', description: '', name: 'SDKAT_STACK_ID')
-
     string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
     string(defaultValue: '', description: '', name: 'AK')
     string(defaultValue: '', description: '', name: 'SK')
