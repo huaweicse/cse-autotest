@@ -18,6 +18,7 @@ GO111MODULE=on go mod download'''
     stage('build') {
       steps {
         sh '''cd $WORKSPACE/scripts
+export PATH=/usr/local/go/bin:$PATH
 bash build_gosdk_demo_image.sh'''
       }
     }
