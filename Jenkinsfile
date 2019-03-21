@@ -4,7 +4,7 @@ pipeline {
     stage('dependency') {
       agent any
       steps {
-        sh '''rm -rf src/github.com/go-chassis/
+        sh '''rm -rf $WORKSPACE/src/github.com/go-chassis/
 echo $WORKSPACE
 mkdir -p src/github.com/go-chassis/
 cd src/github.com/go-chassis/
