@@ -40,13 +40,13 @@ bash push_gosdk_demo_to_huaweicloud.sh'''
     stage('upgrade AOS') {
       steps {
         sh '''cd scripts 
-bash upgrade_stack gosdk'''
+bash upgrade_stack.sh gosdk'''
       }
     }
   }
   parameters {
     string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
-    string(defaultValue: 'go-chassis', description: '', name: 'SDKAT_SWR_ORG')
+    string(defaultValue: 'gochassis', description: '', name: 'SDKAT_SWR_ORG')
     string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
     string(defaultValue: '9b163871-a8ba-3e89-8a30-33450217e218', description: '', name: 'SDKAT_STACK_ID')
     string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
