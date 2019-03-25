@@ -32,7 +32,8 @@ bash build_gosdk_demo_image.sh'''
 export SDKAT_SWR_LOGIN_CMD="docker login -u $SDKAT_REGION@$AK -p $login_key $SDKAT_SWR_ADDR"
 
 
-
+'''
+        sh '''
 cd scripts
 
 bash push_gosdk_demo_to_huaweicloud.sh'''
