@@ -46,18 +46,17 @@ bash upgrade_stack.sh gosdk'''
     stage('Interactive Input') {
       steps {
         script {
-                     def userInput = input(
-                                               id: 'userInput', message: 'input consumer address',
-                                               parameters: [
-                                                       string(defaultValue: 'ip:30700',
-                                                               description: '',
-                                                               name: 'ConsumerAddr'),
-                                               ])
-                     SDKAT_CONSUMER_GOSDK_ADDR=userInput.ConsumerAddr
+                def userInput = input(
+                 id: 'userInput', message: 'Enter path of test reports:?',
+                 parameters: [
+                 [$class: 'TextParameterDefinition', defaultValue: 'ip:30700', description: 'consumer address', name: 'Consumer'],
+                 [$class: 'TextParameterDefinition', description: 'Test', name: 'Test']
+                ])
+                SDKAT_CONSUMER_GOSDK_ADDR=userInput['Consumer']
+          }
 
-                }
+        }
       }
-    }
     stage('run test case') {
            steps{
                           sh '''
