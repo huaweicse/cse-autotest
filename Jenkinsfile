@@ -48,7 +48,7 @@ bash upgrade_stack.sh gosdk'''
     string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
     string(defaultValue: 'gochassis', description: '', name: 'SDKAT_SWR_ORG')
     string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
-    string(defaultValue: '9b163871-a8ba-3e89-8a30-33450217e218', description: '', name: 'SDKAT_STACK_ID')
+    string(defaultValue: 'b5d519d9-197f-d3a7-3be9-7fb156cc7151', description: '', name: 'SDKAT_STACK_ID')
     string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
     string(defaultValue: '', description: '', name: 'AK')
     string(defaultValue: '', description: '', name: 'SK')
