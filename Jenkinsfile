@@ -12,7 +12,8 @@ git clone https://github.com/go-chassis/go-chassis.git
 
 
 
-export GOPATH=$WORKSPACE
+'''
+        sh '''export GOPATH=$WORKSPACE
 export PATH=/usr/local/go/bin:$PATH
 cd $WORKSPACE/src/github.com/go-chassis/go-chassis
 GO111MODULE=on go mod vendor
@@ -46,36 +47,36 @@ bash upgrade_stack.sh gosdk'''
     stage('Interactive Input') {
       steps {
         script {
-                def userInput = input(
-                 id: 'userInput', message: 'Enter path of test reports:?',
-                 parameters: [
-                 [$class: 'TextParameterDefinition', defaultValue: 'ip:30700', description: 'consumer address', name: 'Consumer'],
-                 [$class: 'TextParameterDefinition', description: 'Test', name: 'Test']
-                ])
-                SDKAT_CONSUMER_GOSDK_ADDR=userInput['Consumer']
+          def userInput = input(
+            id: 'userInput', message: 'Enter path of test reports:?',
+            parameters: [
+              [$class: 'TextParameterDefinition', defaultValue: 'ip:30700', description: 'consumer address', name: 'Consumer'],
+              [$class: 'TextParameterDefinition', description: 'Test', name: 'Test']
+            ])
+            SDKAT_CONSUMER_GOSDK_ADDR=userInput['Consumer']
           }
 
         }
       }
-    stage('run test case') {
-           steps{
-                          sh '''
+      stage('run test case') {
+        steps {
+          sh '''
                               echo $SDKAT_CONSUMER_GOSDK_ADDR
                               bash scripts/run_testcase.sh
                           '''
-                      }
         }
+      }
+    }
+    parameters {
+      string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
+      string(defaultValue: 'gochassis', description: '', name: 'SDKAT_SWR_ORG')
+      string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
+      string(defaultValue: 'b5d519d9-197f-d3a7-3be9-7fb156cc7151', description: '', name: 'SDKAT_STACK_ID')
+      string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
+      string(defaultValue: '', description: '', name: 'AK')
+      string(defaultValue: '', description: '', name: 'SK')
+      string(defaultValue: '', description: '', name: 'SDKAT_USER_NAME')
+      string(defaultValue: '', description: '', name: 'SDKAT_PASSWORD')
+      string(defaultValue: '', description: 'domain', name: 'SDKAT_TENANT_NAME')
+    }
   }
-  parameters {
-    string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
-    string(defaultValue: 'gochassis', description: '', name: 'SDKAT_SWR_ORG')
-    string(defaultValue: 'aos.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_AOS_ADDR')
-    string(defaultValue: 'b5d519d9-197f-d3a7-3be9-7fb156cc7151', description: '', name: 'SDKAT_STACK_ID')
-    string(defaultValue: 'cn-north-1', description: '', name: 'SDKAT_REGION')
-    string(defaultValue: '', description: '', name: 'AK')
-    string(defaultValue: '', description: '', name: 'SK')
-    string(defaultValue: '', description: '', name: 'SDKAT_USER_NAME')
-    string(defaultValue: '', description: '', name: 'SDKAT_PASSWORD')
-    string(defaultValue: '', description: 'domain', name: 'SDKAT_TENANT_NAME')
-  }
-}
