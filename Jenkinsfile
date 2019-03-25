@@ -32,8 +32,7 @@ bash build_gosdk_demo_image.sh'''
 export SDKAT_SWR_LOGIN_CMD="docker login -u $SDKAT_REGION@$AK -p $login_key $SDKAT_SWR_ADDR"
 
 
-'''
-        sh '''
+
 cd scripts
 
 bash push_gosdk_demo_to_huaweicloud.sh'''
@@ -59,14 +58,14 @@ bash upgrade_stack.sh gosdk'''
 
         }
       }
-    stage('run test case') {
+      stage('run test case') {
         steps {
           sh '''
                               export GOPATH=$WORKSPACE
                               export PATH=/usr/local/go/bin:$PATH
                               echo ${SDKAT_CONSUMER_GOSDK_ADDR}
                               brf2=${SDKAT_CONSUMER_GOSDK_ADDR}
-                              echo \$brf2
+                              echo $brf2
                               bash scripts/run_testcase.sh
                           '''
         }
