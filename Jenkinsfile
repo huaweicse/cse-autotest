@@ -51,19 +51,19 @@ bash upgrade_stack.sh gosdk'''
                                                parameters: [
                                                        string(defaultValue: 'ip:30700',
                                                                description: '',
-                                                               name: 'consumerAddr'),
+                                                               name: 'ConsumerAddr'),
                                                ])
-                     SDKAT_CONSUMER_GOSDK_ADDR=userInput.consumerAddr
+                     SDKAT_CONSUMER_GOSDK_ADDR=userInput.ConsumerAddr
 
                 }
       }
     }
     stage('run test case') {
            steps{
-                          sh """
+                          sh '''
                               echo $SDKAT_CONSUMER_GOSDK_ADDR
                               bash scripts/run_testcase.sh
-                          """
+                          '''
                       }
         }
   }
