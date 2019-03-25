@@ -59,10 +59,14 @@ bash upgrade_stack.sh gosdk'''
 
         }
       }
-      stage('run test case') {
+    stage('run test case') {
         steps {
           sh '''
-                              echo $SDKAT_CONSUMER_GOSDK_ADDR
+                              export GOPATH=$WORKSPACE
+                              export PATH=/usr/local/go/bin:$PATH
+                              echo ${SDKAT_CONSUMER_GOSDK_ADDR}
+                              brf2=${SDKAT_CONSUMER_GOSDK_ADDR}
+                              echo \$brf2
                               bash scripts/run_testcase.sh
                           '''
         }
