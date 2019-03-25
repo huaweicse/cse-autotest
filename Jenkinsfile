@@ -43,6 +43,11 @@ bash push_gosdk_demo_to_huaweicloud.sh'''
 bash upgrade_stack.sh gosdk'''
       }
     }
+    stage('') {
+      steps {
+        input 'wait deployment'
+      }
+    }
   }
   parameters {
     string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
