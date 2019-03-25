@@ -53,10 +53,19 @@ bash upgrade_stack.sh gosdk'''
                                                                description: '',
                                                                name: 'consumerAddr'),
                                                ])
+                     SDKAT_CONSUMER_GOSDK_ADDR=userInput.consumerAddr
 
                 }
       }
     }
+    stage('run test case') {
+           steps{
+                          sh """
+                              echo $SDKAT_CONSUMER_GOSDK_ADDR
+                              bash scripts/run_testcase.sh
+                          """
+                      }
+        }
   }
   parameters {
     string(defaultValue: 'swr.cn-north-1.myhuaweicloud.com', description: '', name: 'SDKAT_SWR_ADDR')
