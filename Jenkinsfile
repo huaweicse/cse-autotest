@@ -43,9 +43,18 @@ bash push_gosdk_demo_to_huaweicloud.sh'''
 bash upgrade_stack.sh gosdk'''
       }
     }
-    stage('') {
+    stage('Interactive Input') {
       steps {
-        input 'wait deployment'
+        script {
+                     def userInput = input(
+                                               id: 'userInput', message: 'input consumer address',
+                                               parameters: [
+                                                       string(defaultValue: 'ip:30700',
+                                                               description: '',
+                                                               name: 'consumerAddr'),
+                                               ])
+
+                }
       }
     }
   }
