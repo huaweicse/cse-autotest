@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestLoadbalance(t *testing.T) {
+func TestLoadBalancing(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Load balancing Suite")
 }

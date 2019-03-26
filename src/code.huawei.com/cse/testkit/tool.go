@@ -34,14 +34,14 @@ var protocols = map[string][]string{
 	common.PlatformMesher: {common.ProtocolRest},
 }
 
-// k: consumer type, v:consumer addr
-var consumers map[string]string
+// consumer type and addr
+var Consumers map[string]string
 var defaultConsumers = map[string]string{
 	common.PlatformGoSDK:  "127.0.0.1:8000",
 	common.PlatformMesher: "127.0.0.1:8080",
 }
 
-//provider type
+//provider type and name
 var providers map[string]string
 var defaultProviders = map[string]string{
 	common.PlatformGoSDK:  common.ProviderGoSDK,
@@ -53,7 +53,7 @@ var instanceNames = make(map[string][]string)
 func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol, dimensionInfo, instanceName string, instanceLength int)) {
 	Init()
 
-	for consumerType, consumerAddr := range consumers {
+	for consumerType, consumerAddr := range Consumers {
 		for providerType, providerName := range providers {
 			protos := protocols[consumerType]
 			if len(protos) == 0 {
@@ -108,20 +108,20 @@ func getInstance(key, consumerAddr, providerName, protocol string) (string, int)
 	return newInsanceList[rand.Intn(lengthIns)%lengthIns], lengthIns
 }
 func initConsumerAndProvider() {
-	consumers = make(map[string]string)
+	Consumers = make(map[string]string)
 	//如果设置了consumer地址，则使用设置的consumer地址
 	isConsumerSet := false
 	if v := os.Getenv(common.EnvConsumerGoSdkAddr); v != "" {
-		consumers[common.PlatformGoSDK] = v
+		Consumers[common.PlatformGoSDK] = v
 		isConsumerSet = true
 	}
 	if v := os.Getenv(common.EnvConsumerMesherAddr); v != "" {
-		consumers[common.PlatformMesher] = v
+		Consumers[common.PlatformMesher] = v
 		isConsumerSet = true
 	}
 	//未设置consumer，用默认地址
 	if !isConsumerSet {
-		consumers = defaultConsumers
+		Consumers = defaultConsumers
 	}
 
 	providers = make(map[string]string)
@@ -134,11 +134,11 @@ func initConsumerAndProvider() {
 		}
 	} else {
 		//未设置provider，则与consumer信息对其
-		for p := range consumers {
+		for p := range Consumers {
 			providers[p] = defaultProviders[p]
 		}
 	}
-	log.Println("---consumers: ", consumers)
+	log.Println("---Consumers: ", Consumers)
 	log.Println("---providers: ", providers)
 	log.Println("---protocols: ", protocols)
 }
@@ -148,6 +148,7 @@ func Init() {
 }
 
 func GetResponseInstanceAliasList(u string) []string {
+	log.Println("GetResponseInstanceAliasList url=" + u)
 	c := &model.InstanceInfoResponse{}
 	resp, err := http.Get(u)
 	if err != nil {
@@ -161,7 +162,7 @@ func GetResponseInstanceAliasList(u string) []string {
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("GetResponseInstanceAliasList body: ", string(body))
 	err = json.Unmarshal(body, c)
 	if err != nil {
 		panic(err)
@@ -188,7 +189,7 @@ func Callcc(url, cctype, dimensionInfo string, items map[string]interface{}, key
 		Type:          cctype,
 		DimensionInfo: dimensionInfo,
 	}
-	body, err := json.MarshalIndent(p,""," ")
+	body, err := json.MarshalIndent(p, "", " ")
 	if err != nil {
 		panic(err)
 	}

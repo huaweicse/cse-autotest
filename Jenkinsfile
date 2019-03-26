@@ -53,7 +53,8 @@ bash upgrade_stack.sh gosdk'''
               [$class: 'TextParameterDefinition', defaultValue: 'ip:30700', description: 'consumer address', name: 'Consumer'],
               [$class: 'TextParameterDefinition', description: 'Test', name: 'Test']
             ])
-            SDKAT_CONSUMER_GOSDK_ADDR=userInput['Consumer']
+            env.SDKAT_CONSUMER_GOSDK_ADDR=userInput['Consumer']
+            echo(env.SDKAT_CONSUMER_GOSDK_ADDR)
           }
 
         }
@@ -64,8 +65,6 @@ bash upgrade_stack.sh gosdk'''
                               export GOPATH=$WORKSPACE
                               export PATH=/usr/local/go/bin:$PATH
                               echo ${SDKAT_CONSUMER_GOSDK_ADDR}
-                              brf2=${SDKAT_CONSUMER_GOSDK_ADDR}
-                              echo $brf2
                               bash scripts/run_testcase.sh
                           '''
         }

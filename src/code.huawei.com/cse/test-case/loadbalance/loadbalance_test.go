@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func IsRoundRoubin(cycle int, n ...string) bool {
+func IsRoundRobin(cycle int, n ...string) bool {
 	Expect((len(n) - cycle) > 0).To(BeTrue())
 	Expect(cycle > 1).To(BeTrue())
 	length := len(n) - cycle
@@ -62,7 +62,7 @@ func isRand(cycle int, n ...string) {
 	Expect((len(n) - cycle) > 0).To(BeTrue())
 	Expect(cycle > 1).To(BeTrue())
 	Expect(isStrategySessionStickiness(cycle, n...)).To(BeFalse())
-	Expect(IsRoundRoubin(cycle, n...)).To(BeFalse())
+	Expect(IsRoundRobin(cycle, n...)).To(BeFalse())
 	Expect(isWeightedResponse(cycle, n...)).To(BeFalse())
 }
 func test(consumerAddr, providerName, protocol, dimensionInfo, instanceName string, instancesLength int) {
@@ -114,7 +114,7 @@ func testLB(text, dimensionInfo, consumerAddr, testUri,
 		log.Println(fmt.Sprintf("type:%s,---instance list:%v", t, nameList))
 		switch t {
 		case "RoundRobin":
-			IsRoundRoubin(instancesLength, nameList...)
+			IsRoundRobin(instancesLength, nameList...)
 		case "SessionStickiness":
 			isStrategySessionStickiness(instancesLength, nameList...)
 		case "WeightedResponse":
