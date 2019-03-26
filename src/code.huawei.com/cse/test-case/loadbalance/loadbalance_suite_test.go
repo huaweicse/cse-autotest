@@ -9,5 +9,5 @@ import (
 
 func TestLoadbalance(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Loadbalance Suite")
+	RunSpecs(t, "Load balancing Suite")
 }

@@ -19,7 +19,6 @@ import (
 	"code.huawei.com/cse/model"
 	"code.huawei.com/cse/util"
 	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
 type Param struct {
@@ -70,6 +69,7 @@ func SDKATContext(body func(inputConsumerAddr, inputProviderName, inputProtocol,
 			for _, p := range protos {
 				k := fmt.Sprintf("%s|%s|%s|%s|%s", consumerType, consumerAddr, providerType, providerName, p)
 				insName, instanceLength := getInstance(k, consumerAddr, providerName, p)
+				log.Println(insName, instanceLength)
 				Context(fmt.Sprintf("consumer addr: %s, %s -> %s, protocol: %s", consumerAddr, consumerType, providerType, p), func() {
 					body(consumerAddr, providerName, p, dimensionInfo, insName, instanceLength)
 				})
@@ -88,7 +88,8 @@ func getInstance(key, consumerAddr, providerName, protocol string) (string, int)
 			{common.ParamProtocol: protocol},
 			{common.ParamTimes: common.CallTimes20Str},
 		}))
-	instanceList := GetResponceInstanceAliasList(testUri)
+	log.Println("url=" + testUri)
+	instanceList := GetResponseInstanceAliasList(testUri)
 	newInsanceList := []string{}
 	mTemp := make(map[string]int)
 	lengthInstance := len(instanceList)
@@ -99,7 +100,9 @@ func getInstance(key, consumerAddr, providerName, protocol string) (string, int)
 		mTemp[instanceList[i]] = 0
 		newInsanceList = append(newInsanceList, instanceList[i])
 	}
-	Expect(len(newInsanceList) >= 2).To(BeTrue())
+	if len(newInsanceList) < 2 {
+		panic(newInsanceList)
+	}
 	instanceNames[key] = newInsanceList
 	lengthIns := len(newInsanceList)
 	return newInsanceList[rand.Intn(lengthIns)%lengthIns], lengthIns
@@ -144,21 +147,28 @@ func Init() {
 	once.Do(initConsumerAndProvider)
 }
 
-func GetResponceInstanceAliasList(u string) []string {
+func GetResponseInstanceAliasList(u string) []string {
 	c := &model.InstanceInfoResponse{}
 	resp, err := http.Get(u)
-	Expect(err).To(BeNil())
-	Expect(resp.StatusCode).To(Equal(http.StatusOK))
+	if err != nil {
+		panic(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		panic("status is not ok: " + resp.Status)
+	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 
 	err = json.Unmarshal(body, c)
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 
 	l := make([]string, 0)
 	for _, r := range c.Result {
-		Expect(r.Provider).NotTo(BeNil())
 		if r.Provider == nil {
 			continue
 		}
@@ -180,18 +190,34 @@ func Callcc(url, cctype, dimensionInfo string, items map[string]interface{}, key
 	}
 	body, _ := json.Marshal(p)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
-	Expect(err).To(BeNil())
-	Expect(resp).NotTo(BeNil())
-	Expect(resp.StatusCode).To(Equal(http.StatusOK))
+	if err != nil {
+		panic(err)
+	}
+	if resp == nil {
+		panic(resp)
+	}
+	if resp.StatusCode != http.StatusOK {
+		panic("status is not ok: " + resp.Status)
+	}
 
 	// read data for resp
 	m := make(map[string]interface{})
 	body, err = ioutil.ReadAll(resp.Body)
-	Expect(err).To(BeNil())
-	Expect(len(body)).NotTo(Equal(0))
+	if err != nil {
+		panic(err)
+	}
+	if len(body) == 0 {
+		panic("body is empty")
+	}
 	err = json.Unmarshal(body, &m)
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 
-	Expect(m["Result"]).NotTo(BeEmpty())
-	Expect(m["Result"]).To(Equal("Success"))
+	if m["Result"] == "" {
+		panic("result is nil")
+	}
+	if m["Result"] != "Success" {
+		panic(m["Result"])
+	}
 }

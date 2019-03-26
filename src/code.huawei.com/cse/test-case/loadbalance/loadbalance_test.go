@@ -105,11 +105,11 @@ func testLB(text, dimensionInfo, consumerAddr, testUri,
 				{common.ParamProtocol: fmt.Sprintf("delayInstance/%s/1000", instanceName)},
 				{common.ParamTimes: common.CallTimes10Str},
 			}))
-		testkit.GetResponceInstanceAliasList(curl)
+		testkit.GetResponseInstanceAliasList(curl)
 		time.Sleep(30 * time.Second)
 	}
 	It(text, func() {
-		nameList := testkit.GetResponceInstanceAliasList(testUri)
+		nameList := testkit.GetResponseInstanceAliasList(testUri)
 
 		log.Println(fmt.Sprintf("type:%s,---instance list:%v", t, nameList))
 		switch t {
