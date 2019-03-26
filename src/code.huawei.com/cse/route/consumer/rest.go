@@ -89,6 +89,7 @@ func (s *Server) ConfigCenter(w http.ResponseWriter, r *http.Request) {
 		errorMessage(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	openlogging.Info(string(body))
 	err = json.Unmarshal(body, &param)
 	if err != nil {
 		errorMessage(w, http.StatusInternalServerError, err.Error())
@@ -128,12 +129,16 @@ func ccAdd(param Param) (*http.Response, error) {
 
 	// get url
 	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.Cse.Credentials.Project)
+	openlogging.Info(ccurl)
 	// param
 	configApi := CreateConfigApi{
 		DimensionInfo: param.DimensionInfo,
 		Items:         param.Data,
 	}
-	cb, _ := json.Marshal(configApi)
+	cb, err := json.MarshalIndent(configApi, "", " ")
+	if err != nil {
+		return nil, err
+	}
 	payload := bytes.NewReader(cb)
 	return ccHTTPDO(payload, ccurl, http.MethodPost)
 }
@@ -156,11 +161,14 @@ func ccDelete(param Param) (*http.Response, error) {
 	return ccHTTPDO(payload, ccurl, http.MethodDelete)
 }
 func ccHTTPDO(data *bytes.Reader, ccurl, method string) (*http.Response, error) {
-	req, _ := http.NewRequest(method, ccurl, data)
+	req, err := http.NewRequest(method, ccurl, data)
+	if err != nil {
+		return nil, err
+	}
 	if signRequest == nil {
 		signRequest = newSignRequest()
 	}
-	err := signRequest(req)
+	err = signRequest(req)
 
 	if err != nil {
 		openlogging.GetLogger().Errorf("sign request failed,err :%v", ccurl, err)

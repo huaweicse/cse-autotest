@@ -188,7 +188,11 @@ func Callcc(url, cctype, dimensionInfo string, items map[string]interface{}, key
 		Type:          cctype,
 		DimensionInfo: dimensionInfo,
 	}
-	body, _ := json.Marshal(p)
+	body, err := json.MarshalIndent(p,""," ")
+	if err != nil {
+		panic(err)
+	}
+	log.Println(string(body))
 	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
 	if err != nil {
 		panic(err)
