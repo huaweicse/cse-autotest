@@ -211,6 +211,7 @@ func Callcc(url, cctype, dimensionInfo string, items map[string]interface{}, key
 	if err != nil {
 		panic(err)
 	}
+	log.Println("cc response: ", string(body))
 	if len(body) == 0 {
 		panic("body is empty")
 	}
