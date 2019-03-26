@@ -73,21 +73,26 @@ func test(consumerAddr, providerName, protocol, dimensionInfo, instanceName stri
 			{common.ParamProtocol: protocol},
 			{common.ParamTimes: common.CallTimes20Str},
 		}))
+	Describe("Instance name list ", func() {
+		Context("With round robin strategy", func() {
+			// RoundRobin test
+			testLB("should be round robin", dimensionInfo,
+				consumerAddr, testUri, "RoundRobin", "0", providerName, instanceName, instancesLength)
+		})
 
-	// RoundRobin test
-	testLB("Instance name list should be round robin", dimensionInfo,
-		consumerAddr, testUri, "RoundRobin", "", providerName, instanceName, instancesLength)
+	})
+
 	// session stickiness test
 	testLB("Instance name list should be session stickiness", dimensionInfo, consumerAddr,
 		testUri, "SessionStickiness", "10", providerName, instanceName, instancesLength)
 
 	// WeightedResponse test
 	testLB("Instance name list should be WeightedResponse", dimensionInfo, consumerAddr,
-		testUri, "WeightedResponse", "", providerName, instanceName, instancesLength)
+		testUri, "WeightedResponse", "0", providerName, instanceName, instancesLength)
 
 	// Rand test
 	testLB("Instance name list should be Random", dimensionInfo, consumerAddr, testUri,
-		"Random", "", providerName, instanceName, instancesLength)
+		"Random", "0", providerName, instanceName, instancesLength)
 }
 func testLB(text, dimensionInfo, consumerAddr, testUri,
 	t, st, providerName, instanceName string, instancesLength int) {

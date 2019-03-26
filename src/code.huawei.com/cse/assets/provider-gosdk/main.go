@@ -4,10 +4,10 @@ import _ "github.com/huaweicse/auth/adaptor/gochassis"
 
 import (
 	_ "net/http/pprof"
-
+	_ "github.com/go-chassis/go-chassis/configcenter"
 	"code.huawei.com/cse/assets/provider-gosdk/schemas/rest"
 	"github.com/go-chassis/go-chassis"
-	_ "github.com/go-chassis/go-chassis/configcenter"
+
 	"github.com/go-chassis/go-chassis/core/lager"
 	"github.com/go-chassis/go-chassis/core/server"
 	_ "github.com/huaweicse/cse-collector"

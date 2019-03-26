@@ -110,13 +110,18 @@ func (s *Server) ConfigCenter(w http.ResponseWriter, r *http.Request) {
 		errorMessage(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if resp == nil && resp.StatusCode > 300 && resp.StatusCode < 200 {
+	if resp == nil {
 		m := fmt.Sprintf("%s config form cc failed , please check param", param.Type)
-		openlogging.GetLogger().Error(m)
+		openlogging.Error(m)
 		errorMessage(w, http.StatusInternalServerError, m)
 		return
 	}
-
+	if resp.StatusCode != 200 {
+		body, _ = ioutil.ReadAll(resp.Body)
+		openlogging.GetLogger().Infof("%s config form cc failed : message %s", param.Type, string(body))
+		errorMessage(w, http.StatusInternalServerError, string(body))
+		return
+	}
 	body, _ = ioutil.ReadAll(resp.Body)
 	openlogging.GetLogger().Infof("%s config form cc success : message %s", param.Type, string(body))
 
@@ -128,7 +133,9 @@ func (s *Server) ConfigCenter(w http.ResponseWriter, r *http.Request) {
 func ccAdd(param Param) (*http.Response, error) {
 
 	// get url
-	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.Cse.Credentials.Project)
+
+	openlogging.Info(fmt.Sprintf("%s", config.GlobalDef.Cse.Credentials))
+	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.Cse.Config.Client.ServerURI, config.GlobalDef.Cse.Credentials.Project)
 	openlogging.Info(ccurl)
 	// param
 	configApi := CreateConfigApi{
@@ -139,6 +146,7 @@ func ccAdd(param Param) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	openlogging.Info(string(cb))
 	payload := bytes.NewReader(cb)
 	return ccHTTPDO(payload, ccurl, http.MethodPost)
 }
@@ -149,7 +157,7 @@ func ccDelete(param Param) (*http.Response, error) {
 		return nil, errors.New("not key need to delete , please check keys")
 	}
 	// ccurl
-	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.ConfigCenterUrl, config.GlobalDef.Cse.Credentials.Project)
+	ccurl := fmt.Sprintf("%v/v3/%s/configuration/items", config.GlobalDef.Cse.Config.Client.ServerURI, config.GlobalDef.Cse.Credentials.Project)
 
 	configApi := DeleteConfigApi{
 		DimensionInfo: param.DimensionInfo,

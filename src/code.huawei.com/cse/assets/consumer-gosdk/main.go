@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 
 	_ "code.huawei.com/cse/assets/consumer-gosdk/schemas/rest"
+	"code.huawei.com/cse/config"
 	"github.com/go-chassis/go-chassis"
 	_ "github.com/go-chassis/go-chassis/configcenter"
 	"github.com/go-chassis/go-chassis/core/lager"
@@ -22,6 +23,9 @@ func main() {
 		lager.Logger.Errorf("Init failed, err: %s", err)
 		return
 	}
-
+	err := config.Init()
+	if err != nil {
+		panic(err)
+	}
 	chassis.Run()
 }

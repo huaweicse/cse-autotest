@@ -45,9 +45,12 @@ func test(consumerAddr, providerName, protocol, dimensionInfo, instanceName stri
 			{common.ParamProvider: providerName},
 			{common.ParamProtocol: protocol},
 		}))
-	It("Response should contains expected provider info", func() {
-		CheckReponseProvider(testUri, providerKey)
+	Describe("response body", func() {
+		It("should contains expected provider info", func() {
+			CheckReponseProvider(testUri, providerKey)
+		})
 	})
+
 }
 
 var _ = Describe("Communication", func() {
